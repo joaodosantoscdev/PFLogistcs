@@ -1,3 +1,6 @@
+using PFLogistcs.Context;
+using Microsoft.EntityFrameworkCore;
+
 namespace PFLogistcs
 {
     public class Startup
@@ -10,6 +13,12 @@ namespace PFLogistcs
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllers();
+
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<PFLogisticsDbContext>(opt => {
+                opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            });
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
