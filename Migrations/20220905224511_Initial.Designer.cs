@@ -11,7 +11,7 @@ using PFLogistcs.Context;
 namespace PFLogistcs.Migrations
 {
     [DbContext(typeof(PFLogisticsDbContext))]
-    [Migration("20220826053856_Initial")]
+    [Migration("20220905224511_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,7 +81,7 @@ namespace PFLogistcs.Migrations
                     b.HasIndex("AddressId")
                         .IsUnique();
 
-                    b.ToTable("CLients");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("PFLogistcs.Models.ItemOrder", b =>

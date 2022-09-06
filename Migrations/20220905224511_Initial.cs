@@ -66,7 +66,7 @@ namespace PFLogistcs.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "CLients",
+                name: "Clients",
                 columns: table => new
                 {
                     ClientId = table.Column<int>(type: "int", nullable: false)
@@ -79,9 +79,9 @@ namespace PFLogistcs.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CLients", x => x.ClientId);
+                    table.PrimaryKey("PK_Clients", x => x.ClientId);
                     table.ForeignKey(
-                        name: "FK_CLients_Addresses_AddressId",
+                        name: "FK_Clients_Addresses_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Addresses",
                         principalColumn: "AddressId",
@@ -132,9 +132,9 @@ namespace PFLogistcs.Migrations
                 {
                     table.PrimaryKey("PK_ItemOrders", x => new { x.ProductId, x.OrderId });
                     table.ForeignKey(
-                        name: "FK_ItemOrders_CLients_ClientId",
+                        name: "FK_ItemOrders_Clients_ClientId",
                         column: x => x.ClientId,
-                        principalTable: "CLients",
+                        principalTable: "Clients",
                         principalColumn: "ClientId");
                     table.ForeignKey(
                         name: "FK_ItemOrders_Orders_OrderId",
@@ -146,8 +146,8 @@ namespace PFLogistcs.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CLients_AddressId",
-                table: "CLients",
+                name: "IX_Clients_AddressId",
+                table: "Clients",
                 column: "AddressId",
                 unique: true);
 
@@ -176,7 +176,7 @@ namespace PFLogistcs.Migrations
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "CLients");
+                name: "Clients");
 
             migrationBuilder.DropTable(
                 name: "Orders");

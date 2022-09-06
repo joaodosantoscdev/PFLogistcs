@@ -1,5 +1,8 @@
 using PFLogistcs.Context;
 using Microsoft.EntityFrameworkCore;
+using PFLogistcs.Services;
+using PFLogistcs.Repositories;
+using PFLogistcs.Repositories.Interfaces;
 
 namespace PFLogistcs
 {
@@ -19,6 +22,11 @@ namespace PFLogistcs
             services.AddDbContext<PFLogisticsDbContext>(opt => {
                 opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
+
+            services.AddScoped<IProductService, ProductService>();
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IGenericRepository, GenericRepository>();
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
