@@ -79,7 +79,7 @@ namespace PFLogistcs.Migrations
                     b.HasIndex("AddressId")
                         .IsUnique();
 
-                    b.ToTable("CLients");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("PFLogistcs.Models.ItemOrder", b =>

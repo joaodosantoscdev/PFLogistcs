@@ -35,7 +35,6 @@ namespace PFLogistcs.Repositories
       return await query.ToArrayAsync();
     }
 
-
     public async Task<Product> GetProductByIdAsync(int productId)
     {
       IQueryable<Product> query = _context.Products
