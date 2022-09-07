@@ -9,17 +9,25 @@ namespace PFLogistcs.Context
         public PFLogisticsDbContext(DbContextOptions<PFLogisticsDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder) {
+            
             builder.Entity<Client>()
-                .HasOne(client => client.Address)
+                .HasMany<Address>(client => client.Address)
                 .WithOne(address => address.Client)
-                .HasForeignKey<Client>(client => client.AddressId);
+                .HasForeignKey(address => address.AddressId);
 
             builder.Entity<Product>()
                 .HasOne(product => product.Category)
-                .WithMany(category => category.Products);
+                .WithMany(category => category.Products)
+                .HasForeignKey(product => product.CategoryId);
 
+            builder.Entity<Order>()
+                .HasOne(order => order.Client)
+                .WithMany(client => client.Orders)
+                .HasForeignKey(order => order.ClientId);
+            
             builder.Entity<ItemOrder>()
                 .HasKey(key => new { key.ProductId, key.OrderId } );
+
         }
 
         public DbSet<Address> Addresses { get; set; }

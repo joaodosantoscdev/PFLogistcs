@@ -11,9 +11,9 @@ namespace PFLogistcs.Models
     public int ClientId { get; set; }
     public string Name { get; set; }
     public string CellPhone { get; set; }
-    public int AddressId { get; set; }
-    public virtual Address Address { get; set; }
+    
+    public ICollection<Order> Orders { get; set; }
+    public ICollection<Address> Address { get; set; }
     public ICollection<ItemOrder> ItemOrders { get; set; }
-
   }
 }

@@ -28,7 +28,7 @@ namespace PFLogistcs.Repositories
       IQueryable<Product> query = _context.Products
         .Include(product => product.Category);
 
-      query.OrderBy(product => product.ProductId)
+      query = query.AsNoTracking().OrderBy(product => product.ProductId)
         .Where(product => product.Category.Description.ToLower()
         .Contains(description.ToLower()));
 
@@ -40,7 +40,7 @@ namespace PFLogistcs.Repositories
       IQueryable<Product> query = _context.Products
         .Include(product => product.Category);
 
-        query.OrderBy(product => product.ProductId).Where(product => product.ProductId == productId);
+        query = query.AsNoTracking().OrderBy(product => product.ProductId).Where(product => product.ProductId == productId);
 
       return await query.FirstOrDefaultAsync();
     }

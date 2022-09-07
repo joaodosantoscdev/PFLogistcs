@@ -1,3 +1,4 @@
+using AutoMapper;
 using PFLogistcs.Models;
 using PFLogistcs.Repositories.Interfaces;
 
@@ -7,10 +8,12 @@ namespace PFLogistcs.Services
   {
     private readonly IGenericRepository _genericRepository;
     private readonly IProductRepository _productRepository;
-    public ProductService(IProductRepository productRepository, IGenericRepository genericRepository)
+    private readonly IMapper _mapper;
+    public ProductService(IProductRepository productRepository, IGenericRepository genericRepository, IMapper mapper)
     {
         _genericRepository = genericRepository;
         _productRepository = productRepository;
+        _mapper = mapper;
     }
 
     public async Task<Product[]> GetAllProductsAsync()
@@ -33,7 +36,11 @@ namespace PFLogistcs.Services
     {
         try 
         {
-            return await _productRepository.GetProductByIdAsync(productId);
+            var _product = await _productRepository.GetProductByIdAsync(productId);
+
+            if (_product == null) throw new Exception("Produto nao encontrado.");
+            
+            return _product;
         }
         catch (Exception e) 
         {
@@ -53,13 +60,18 @@ namespace PFLogistcs.Services
         }
     }
 
-    public Task<Product> AddProduct(Product model)
+    public async Task<Product> AddProduct(Product model)
     {
         try {
             if (model != null) {
-            _genericRepository.Add(model);
+              _genericRepository.Add<Product>(model);
             }
-
+            
+            if (await _genericRepository.SaveChangesAsync()) {
+                var eventReturn = await _productRepository.GetProductByIdAsync(model.ProductId);
+                
+                return eventReturn;
+            }
             return null;
         } 
         catch(Exception e)
@@ -68,15 +80,54 @@ namespace PFLogistcs.Services
         }
     }
 
-    public Task<Product> DeleteProduct(int productId)
+    public async Task<Product> UpdateProduct(int productId, Product model)
     {
-      return null;
+      try
+      {
+        var _product = await _productRepository.GetProductByIdAsync(productId);
+        
+        if (_product == null) {
+            throw new Exception("Nao foi possivel encontrar o produto a ser atualizado.");
+        }
+
+        model.ProductId = _product.ProductId;
+
+        var mappedProduct = _mapper.Map(model, _product);
+        
+        _genericRepository.Update(mappedProduct);
+
+        if (await _genericRepository.SaveChangesAsync()) {
+            var resultProduct = await _productRepository.GetProductByIdAsync(_product.ProductId);
+
+            return resultProduct;
+        }
+        return null;
+      }
+      catch (Exception e)
+      {
+         throw new Exception(e.Message);
+      }
     }
 
-
-    public Task<Product> UpdateProduct(int productId, Product model)
+    public async Task<bool> DeleteProduct(int productId)
     {
-      throw new NotImplementedException();
+      try
+      {
+        var _product = await _productRepository.GetProductByIdAsync(productId); 
+
+        if (_product == null) {
+            throw new Exception("Nao foi possivel encontrar o produto a ser deletado.");
+        }
+        
+        _genericRepository.Delete<Product>(_product);
+
+        return await _genericRepository.SaveChangesAsync();
+      }
+      catch (Exception e)
+      {
+         throw new Exception(e.Message);
+      }
     }
+
   }
 }
