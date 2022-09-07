@@ -8,8 +8,10 @@ namespace PFLogistcs.Models
         {
             Products = new Collection<Product>();
         }
+        
         public int CategoryId { get; set; }
         public string Description { get; set; }
+
         public ICollection<Product> Products {get; set;}    
     }
 }
