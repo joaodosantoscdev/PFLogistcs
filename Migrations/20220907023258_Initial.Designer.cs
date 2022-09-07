@@ -11,7 +11,7 @@ using PFLogistcs.Context;
 namespace PFLogistcs.Migrations
 {
     [DbContext(typeof(PFLogisticsDbContext))]
-    [Migration("20220905224511_Initial")]
+    [Migration("20220907023258_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,6 @@ namespace PFLogistcs.Migrations
             modelBuilder.Entity("PFLogistcs.Models.Address", b =>
                 {
                     b.Property<int>("AddressId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("AddressDescription")
@@ -32,6 +31,9 @@ namespace PFLogistcs.Migrations
 
                     b.Property<string>("City")
                         .HasColumnType("longtext");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
 
                     b.Property<string>("District")
                         .HasColumnType("longtext");
@@ -67,9 +69,6 @@ namespace PFLogistcs.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CellPhone")
                         .HasColumnType("longtext");
 
@@ -77,9 +76,6 @@ namespace PFLogistcs.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("ClientId");
-
-                    b.HasIndex("AddressId")
-                        .IsUnique();
 
                     b.ToTable("Clients");
                 });
@@ -116,6 +112,9 @@ namespace PFLogistcs.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime(6)");
 
@@ -123,6 +122,8 @@ namespace PFLogistcs.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("OrderId");
+
+                    b.HasIndex("ClientId");
 
                     b.ToTable("Orders");
                 });
@@ -159,15 +160,15 @@ namespace PFLogistcs.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("PFLogistcs.Models.Client", b =>
+            modelBuilder.Entity("PFLogistcs.Models.Address", b =>
                 {
-                    b.HasOne("PFLogistcs.Models.Address", "Address")
-                        .WithOne("Client")
-                        .HasForeignKey("PFLogistcs.Models.Client", "AddressId")
+                    b.HasOne("PFLogistcs.Models.Client", "Client")
+                        .WithMany("Address")
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Address");
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("PFLogistcs.Models.ItemOrder", b =>
@@ -176,11 +177,32 @@ namespace PFLogistcs.Migrations
                         .WithMany("ItemOrders")
                         .HasForeignKey("ClientId");
 
-                    b.HasOne("PFLogistcs.Models.Order", null)
+                    b.HasOne("PFLogistcs.Models.Order", "Order")
                         .WithMany("ItemOrders")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("PFLogistcs.Models.Product", "Product")
+                        .WithMany("ItemOrders")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("PFLogistcs.Models.Order", b =>
+                {
+                    b.HasOne("PFLogistcs.Models.Client", "Client")
+                        .WithMany("Orders")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("PFLogistcs.Models.Product", b =>
@@ -194,11 +216,6 @@ namespace PFLogistcs.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("PFLogistcs.Models.Address", b =>
-                {
-                    b.Navigation("Client");
-                });
-
             modelBuilder.Entity("PFLogistcs.Models.Category", b =>
                 {
                     b.Navigation("Products");
@@ -206,10 +223,19 @@ namespace PFLogistcs.Migrations
 
             modelBuilder.Entity("PFLogistcs.Models.Client", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("ItemOrders");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("PFLogistcs.Models.Order", b =>
+                {
+                    b.Navigation("ItemOrders");
+                });
+
+            modelBuilder.Entity("PFLogistcs.Models.Product", b =>
                 {
                     b.Navigation("ItemOrders");
                 });

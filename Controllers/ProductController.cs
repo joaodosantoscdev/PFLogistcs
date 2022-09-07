@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PFLogistcs.Services;
+using PFLogistcs.Models;
 
 namespace PFLogistcs.Controllers
 {
@@ -18,7 +19,7 @@ namespace PFLogistcs.Controllers
         }
 
         [HttpGet("")]
-        public async Task<ActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
           try
           {
@@ -35,7 +36,7 @@ namespace PFLogistcs.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> GetByProductId(int id)
+        public async Task<IActionResult> GetByProductId(int id)
         {
           try {
             var _product = await _productService.GetProductByIdAsync(id);
@@ -51,21 +52,62 @@ namespace PFLogistcs.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddProduct()
+        public async Task<IActionResult> AddProduct(Product model)
         {
-            return Ok();
+          try
+          {
+            if (model == null) {
+              return this.StatusCode(StatusCodes.Status204NoContent, $"Produto em formato invalido.");
+            }
+
+            var _product = await _productService.AddProduct(model);
+
+            return Ok(_product);
+          }
+          catch (Exception e)
+          {
+            return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao adicionar Produto. Erro: {e.Message}");
+          }
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateProduct(int id)
+        public async Task<IActionResult> UpdateProduct(int id, Product model)
         {
-            return Ok();
+            try
+            {
+              var _product =  await _productService.UpdateProduct(id, model);
+              
+              return Ok();
+            }
+            catch (Exception e)
+            {
+               return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao atualizar Produto selecionado. Erro: {e.Message}");
+            }
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteProduct(int id)
+        public async Task<ActionResult> DeleteProduct(int id)
         {
-            return NoContent();
+            try
+            {
+              var _product = _productService.GetProductByIdAsync(id);
+
+              if (_product == null) 
+                return this.StatusCode(StatusCodes.Status204NoContent, $"Produto nao existe ou nao esta cadastrado na base.");
+
+              if (await _productService.DeleteProduct(id)) 
+              {
+                return Ok(new {message = "Produto deletado com sucesso"});
+              } 
+              else 
+              {
+                throw new Exception("Ocorreu um erro nao especificado ao tentar deletar o produto.");
+              }
+            }
+            catch (Exception e)
+            {
+               return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao tentar deletar Produto. Erro: {e.Message}");
+            }
         }
     }
 }

@@ -9,6 +9,6 @@ namespace PFLogistcs.Services
         Task<Product> GetProductByIdAsync(int productId);
         Task<Product> AddProduct(Product model); 
         Task<Product> UpdateProduct(int productId, Product model); 
-        Task<Product> DeleteProduct(int productId); 
+        Task<bool> DeleteProduct(int productId);
     }
 }

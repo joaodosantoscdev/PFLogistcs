@@ -15,13 +15,17 @@ namespace PFLogistcs
         }
 
         public void ConfigureServices(IServiceCollection services) {
-            services.AddControllers();
+            
+            services.AddControllers().AddNewtonsoftJson(opt => 
+                opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<PFLogisticsDbContext>(opt => {
                 opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<IProductService, ProductService>();
 
@@ -43,7 +47,6 @@ namespace PFLogistcs
             {
                 app.UseHttpsRedirection();
             }
-
 
             app.UseAuthorization();
 
