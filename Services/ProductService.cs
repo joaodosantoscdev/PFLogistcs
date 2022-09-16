@@ -62,7 +62,8 @@ namespace PFLogistcs.Services
 
     public async Task<Product> AddProduct(Product model)
     {
-        try {
+        try 
+        {
             if (model != null) {
               _genericRepository.Add<Product>(model);
             }
@@ -72,6 +73,7 @@ namespace PFLogistcs.Services
                 
                 return eventReturn;
             }
+            
             return null;
         } 
         catch(Exception e)
